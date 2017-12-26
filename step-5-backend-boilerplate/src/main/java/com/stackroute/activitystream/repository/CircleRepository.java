@@ -28,7 +28,6 @@ public interface CircleRepository extends JpaRepository<Circle, String>{
 	* the search string. 
 	* 
 	* Write query to find all circles matching with search string.
-	* For example: @Query("SELECT c FROM Circle c WHERE c.name = 'name'")
 	* */
 	
 	@Query 
