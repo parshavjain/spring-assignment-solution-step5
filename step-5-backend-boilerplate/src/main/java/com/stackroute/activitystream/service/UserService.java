@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.stackroute.activitystream.model.User;
 
+
 public interface UserService {
 	
 	/*Should not modify this interface.  You have to implement these methods in corresponding Impl class*/

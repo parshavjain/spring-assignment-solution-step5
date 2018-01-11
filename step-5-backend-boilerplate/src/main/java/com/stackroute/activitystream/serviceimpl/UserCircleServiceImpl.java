@@ -1,10 +1,22 @@
 package com.stackroute.activitystream.serviceimpl;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.stackroute.activitystream.model.Circle;
+import com.stackroute.activitystream.model.User;
 import com.stackroute.activitystream.model.UserCircle;
+import com.stackroute.activitystream.repository.CircleRepository;
+import com.stackroute.activitystream.repository.UserCircleRepository;
+import com.stackroute.activitystream.repository.UserRepository;
 import com.stackroute.activitystream.service.UserCircleService;
-
 
 /*
 * Service classes are used here to implement additional business logic/validation.
@@ -15,55 +27,125 @@ import com.stackroute.activitystream.service.UserCircleService;
 * better. Additionally, tool support and additional behavior might rely on it in the 
 * future.
 * */
-public class UserCircleServiceImpl implements UserCircleService{
-	
-	
+@Service
+public class UserCircleServiceImpl implements UserCircleService {
+
 	/*
 	 * Autowiring should be implemented for the UserRepository, CircleRepository,
-	 * UserCircleRepository.
-	 *  Please note that we should not create any object using the new keyword
-	 * */
-	
+	 * UserCircleRepository. Please note that we should not create any object using
+	 * the new keyword
+	 */
+	@Autowired
+	UserCircleRepository userCircleRepository;
+
+	@Autowired
+	UserRepository userRepository;
+
+	@Autowired
+	CircleRepository circleRepository;
+
 	/*
-	 * This method should be used to add a user to a specific circle. You need to validate
-	 * whether the user and also the circle exist. Also, please check if the user is already
-	 * added to the circle. Call the corresponding method of Respository interface.
+	 * This method should be used to add a user to a specific circle. You need to
+	 * validate whether the user and also the circle exist. Also, please check if
+	 * the user is already added to the circle. Call the corresponding method of
+	 * Respository interface.
 	 * 
 	 */
-	public boolean addUser(String username, String circleName) {
+	public boolean addUser(String userName, String circleName) {
+		try {
+			if (null != userName) {
+				if (!userRepository.exists(userName)) {
+					return false;
+				}
+			}
 
+			if (null != circleName) {
+				Circle circle = circleRepository.findOne(circleName);
+				if (null == circle) {
+					return false;
+				}
+			}
+			
+			UserCircle userCircleExist = userCircleRepository.getUsernameAndCircleName(userName, circleName);
+			
+			if(null != userCircleExist) {
+				return false;
+			}
+
+			UserCircle userCircle = new UserCircle(userName, circleName);
+			userCircleRepository.save(userCircle);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
+	/*
+	 * This method should be used to remove a user from a specific circle. Please
+	 * check if the user is added to the circle before trying to remove. Call the
+	 * corresponding method of Respository interface.
+	 * 
+	 */
+	public boolean removeUser(String userName, String circleName) {
+		try {
+			if (null != userName) {
+				if (!userRepository.exists(userName)) {
+					return false;
+				}
+				Circle circle = circleRepository.findOne(circleName);
+				if (null == circle) {
+					return false;
+				}
+				UserCircle userCircle = new UserCircle(userName, circleName);
+				userCircleRepository.delete(userCircle);
+				return true;
+			}
+
+		} catch (Exception e) {
+			return false;
+		}
 		return false;
 	}
-	
-	
-	/*
-	 * This method should be used to remove a user from a specific circle. Please check 
-	 * if the user is added to the circle before trying to remove. Call the corresponding method of Respository interface.
-	 * 
-	 */
-	public boolean removeUser(String username, String circleName) {
 
-		return false;
-	}
-	
-	
 	/*
-	 * This method should be used to show circles subscribed by a specific user. Call the corresponding method of Respository interface.
+	 * This method should be used to show circles subscribed by a specific user.
+	 * Call the corresponding method of Respository interface.
 	 * 
 	 */
-	public List<String> getMyCircles(String username){
-		
-		return null;
+	public List<String> getMyCircles(String userName) {
+		List<String> userCircleList = null;
+		try {
+			if (null != userName) {
+				if (!userRepository.exists(userName)) {
+					return userCircleList;
+				}
+			}
+			List<String> circleList = (List<String>) userCircleRepository.findCircleNameByUserName(userName);
+			Set<String> set = new HashSet<String>(circleList);
+			userCircleList = new ArrayList<String>();
+			userCircleList.addAll(set);
+		} catch (Exception ex) {
+			return userCircleList;
+		}
+		return userCircleList;
 	}
-	
+
 	/*
-	 * This method should be used to check whether a specific user has subscribed to a 
-	 * specific circle. Call the corresponding method of Respository interface.
+	 * This method should be used to check whether a specific user has subscribed to
+	 * a specific circle. Call the corresponding method of Respository interface.
 	 * 
 	 */
-	public UserCircle get(String username, String circleName) {
-		
-		return null;
+	public UserCircle get(String userName, String circleName) {
+		UserCircle userCircle = null;
+		try {
+			if (null != userName && null != circleName && !userName.isEmpty() && !circleName.isEmpty()) {
+
+				userCircle = (UserCircle) userCircleRepository.getUsernameAndCircleName(userName, circleName);
+			}
+		} catch (Exception ex) {
+			return userCircle;
+		}
+		return userCircle;
 	}
 
 }

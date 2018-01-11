@@ -6,8 +6,11 @@ import com.stackroute.activitystream.model.Message;
 
 public interface MessageService {
 
-	/*Should not modify this interface.  You have to implement these methods in corresponding Impl class*/
-	
+	/*
+	 * Should not modify this interface. You have to implement these methods in
+	 * corresponding Impl class
+	 */
+
 	public List<Message> getMessagesFromCircle(String circleName, int pageNumber);
 
 	public List<Message> getMessagesFromUser(String username, String otherUsername, int pageNumber);

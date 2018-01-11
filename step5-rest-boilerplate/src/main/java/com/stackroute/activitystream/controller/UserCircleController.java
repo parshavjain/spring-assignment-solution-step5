@@ -13,9 +13,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import com.stackroute.activitystream.model.Circle;
+import com.stackroute.activitystream.model.User;
 import com.stackroute.activitystream.model.UserCircle;
+import com.stackroute.activitystream.service.CircleService;
+import com.stackroute.activitystream.service.UserCircleService;
+import com.stackroute.activitystream.service.UserService;
 
 /*
  * As in this assignment, we are working with creating RESTful web service, hence annotate
@@ -25,7 +30,7 @@ import com.stackroute.activitystream.model.UserCircle;
  * format. Starting from Spring 4 and above, we can use @RestController annotation which 
  * is equivalent to using @Controller and @ResposeBody annotation
  */
-
+@RestController
 public class UserCircleController {
 
 	
@@ -33,7 +38,14 @@ public class UserCircleController {
 	 * Autowiring should be implemented for the UserService,UserCircleService,CircleService,UserCircle. 
 	 * Please note that we should not create any object using the new keyword 
 	 */
+	@Autowired
+	private UserService userService;
 	
+	@Autowired
+	private CircleService circleService;
+	
+	@Autowired
+	private UserCircleService userCircleService;
 
 	
 	/* Define a handler method which will add a user to a circle. 
@@ -51,7 +63,40 @@ public class UserCircleController {
 	 * where "username" should be replaced by a valid username without {} 
 	 * and "circleName" should be replaced by a valid circle name without {}
 	*/
-	
+	@RequestMapping(value = "/api/usercircle/addToCircle/{username}/{circleName}", method = RequestMethod.PUT)
+	private ResponseEntity<UserCircle> addToCircle(@PathVariable("username") String username,
+			@PathVariable("circleName") String circleName, HttpSession session) {
+		String loggedUserName = (String) session.getAttribute("userName");
+		if (null == loggedUserName) {
+			return new ResponseEntity<UserCircle>(HttpStatus.UNAUTHORIZED);
+		}
+
+		if (null != username) {
+			User user = userService.get(username);
+			if (null == user) {
+				return new ResponseEntity<UserCircle>(HttpStatus.NOT_FOUND);
+			}
+		}
+		if (null != circleName) {
+			Circle circle = circleService.get(circleName);
+			if (null == circle) {
+				return new ResponseEntity<UserCircle>(HttpStatus.NOT_FOUND);
+			}
+		}
+
+		UserCircle userCircle = userCircleService.get(username, circleName);
+
+		if (null == userCircle) {
+			boolean success = userCircleService.addUser(username, circleName);
+			if (success) {
+				return new ResponseEntity<UserCircle>(HttpStatus.OK);
+			}
+		} else {
+			return new ResponseEntity<UserCircle>(HttpStatus.CONFLICT);
+		}
+
+		return new ResponseEntity<UserCircle>(HttpStatus.INTERNAL_SERVER_ERROR);
+	}
 	
 	
 	
@@ -69,7 +114,22 @@ public class UserCircleController {
 	 * where "username" should be replaced by a valid username without {} 
 	 * and "circleName" should be replaced by a valid circle name without {}
 	*/
-	
+	@RequestMapping(value = "/api/usercircle/removeFromCircle/{username}/{circleName}", method = RequestMethod.PUT)
+	private ResponseEntity<UserCircle> removeFromCircle(@PathVariable("username") String userName,
+			@PathVariable("circleName") String circleName, HttpSession session) {
+		String loggedUserName = (String) session.getAttribute("userName");
+		if (null == loggedUserName) {
+			return new ResponseEntity<UserCircle>(HttpStatus.UNAUTHORIZED);
+		}
+
+		if (null != circleName) {
+			boolean success = userCircleService.removeUser(userName, circleName);
+			if (success) {
+				return new ResponseEntity<UserCircle>(HttpStatus.OK);
+			}
+		}
+		return new ResponseEntity<UserCircle>(HttpStatus.INTERNAL_SERVER_ERROR);
+	}
 	
 	
 	
@@ -84,7 +144,14 @@ public class UserCircleController {
 	 * "/api/usercircle/searchByUser/{username}" using HTTP GET method
 	 * where "username" should be replaced by a valid username without {} 
 	*/	
-	
+	@RequestMapping(value = "/api/usercircle/searchByUser/{username}", method = RequestMethod.GET)
+	private ResponseEntity<List<String>> searchByUser(@PathVariable("username") String username, HttpSession session) {
+		String loggedUserName = (String) session.getAttribute("userName");
+		if (null == loggedUserName) {
+			return new ResponseEntity<List<String>>(HttpStatus.UNAUTHORIZED);
+		}
+		return new ResponseEntity<List<String>>(userCircleService.getMyCircles(username), HttpStatus.OK);
+	}
 	
 
 }

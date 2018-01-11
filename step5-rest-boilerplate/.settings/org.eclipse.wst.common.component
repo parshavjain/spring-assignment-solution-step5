@@ -19,7 +19,7 @@
         
         
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
-        <dependent-module archiveName="ActivityStream-step5-backend-boilerplate-0.0.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/ActivityStream-step5-backend/ActivityStream-step5-backend">
+        <dependent-module archiveName="ActivityStream-step5-backend-boilerplate-0.0.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/ActivityStream-step5-backend-boilerplate/ActivityStream-step5-backend-boilerplate">
             <dependency-type>uses</dependency-type>
         </dependent-module>
                                 
