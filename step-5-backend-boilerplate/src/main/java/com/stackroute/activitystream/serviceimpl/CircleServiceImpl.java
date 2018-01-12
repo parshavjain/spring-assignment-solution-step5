@@ -39,21 +39,26 @@ public class CircleServiceImpl implements CircleService {
 	 * creatorId is a valid username.
 	 */
 	public boolean save(Circle circle) {
-		if (null == circle) {
+		try {
+			if (null == circle) {
+				return false;
+			}
+			if(null != circle.getCreatorId()) {
+				circle.setCreatorId(circle.getCreatorId().toLowerCase());
+			}
+			User user = userRepository.findOne(circle.getCreatorId());
+			
+			if(null != circle.getCircleName()) {
+				Circle tempCircle = circleRepository.findOne(circle.getCircleName());
+				if(null == tempCircle && null != user) {
+					circleRepository.save(circle);
+					return true;
+				}
+			}
+		} catch (Exception e) {
 			return false;
 		}
-		if(null != circle.getCreatorId()) {
-			circle.setCreatorId(circle.getCreatorId().toLowerCase());
-		}
-		User user = userRepository.findOne(circle.getCreatorId());
 		
-		if(null != circle.getCircleName()) {
-			Circle tempCircle = circleRepository.findOne(circle.getCircleName());
-			if(null == tempCircle && null != user) {
-				circleRepository.save(circle);
-				return true;
-			}
-		}
 		return false;
 	}
 

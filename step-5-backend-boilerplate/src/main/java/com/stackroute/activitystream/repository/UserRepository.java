@@ -31,5 +31,5 @@ public interface UserRepository extends CrudRepository<User, String> {
 	User validate(String username, String password);
 
 	@Query("from User where username = (?1)")
-	User findOne(String searchString);
+	User findOne(String username);
 }
