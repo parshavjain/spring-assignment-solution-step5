@@ -34,6 +34,6 @@ public interface CircleRepository extends JpaRepository<Circle, String> {
 	List<Circle> findAll(String username);
 
 	@Query("FROM Circle where circleName = (?1)")
-	Circle findOne(String searchString);
+	Circle findOne(String circleName);
 
 }
