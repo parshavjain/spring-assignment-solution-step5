@@ -86,17 +86,17 @@ public class UserCircleServiceImpl implements UserCircleService {
 	 * corresponding method of Respository interface.
 	 * 
 	 */
-	public boolean removeUser(String userName, String circleName) {
+	public boolean removeUser(String username, String circleName) {
 		try {
-			if (null != userName) {
-				if (!userRepository.exists(userName)) {
+			if (null != username) {
+				if (!userRepository.exists(username)) {
 					return false;
 				}
 				Circle circle = circleRepository.findOne(circleName);
 				if (null == circle) {
 					return false;
 				}
-				UserCircle userCircle = new UserCircle(userName, circleName);
+				UserCircle userCircle = new UserCircle(username, circleName);
 				userCircleRepository.delete(userCircle);
 				return true;
 			}

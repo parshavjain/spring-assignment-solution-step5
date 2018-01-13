@@ -2,6 +2,7 @@ package com.stackroute.activitystream.repository;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 
 import com.stackroute.activitystream.model.User;
 
@@ -30,6 +31,6 @@ public interface UserRepository extends CrudRepository<User, String> {
 	@Query("from User where username = (?1) and password = (?2)")
 	User validate(String username, String password);
 
-	@Query("from User where username = (?1)")
-	User findOne(String username);
+	@Query("from User where username = :username")
+	User findOne(@Param("username") String username);
 }

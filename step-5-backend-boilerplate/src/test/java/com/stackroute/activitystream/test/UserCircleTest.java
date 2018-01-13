@@ -64,7 +64,7 @@ public class UserCircleTest {
 		Circle testCircle = new Circle();
 		testCircle.setCircleName("Java");
 		testCircle.setCreatedDate();
-		testCircle.setCreatorId("John");
+		testCircle.setCreatorId("john");
 		circleRepository.save(testCircle);
 
 	}
